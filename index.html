@@ -37,6 +37,7 @@
       display: flex;
       justify-content: space-around;
       margin-top: 30px;
+      flex-wrap: wrap;
     }
     .feature {
       text-align: center;
@@ -45,6 +46,7 @@
       background-color: #3a3a5a;
       border-radius: 10px;
       transition: transform 0.3s ease;
+      margin: 10px 0;
     }
     .feature:hover {
       transform: translateY(-10px);
@@ -85,6 +87,26 @@
       font-size: 0.9rem;
       color: #cccccc;
     }
+    .toggle-features {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .toggle-features button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #ff4d4d;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .toggle-features button:hover {
+      background-color: #ff1a1a;
+    }
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -93,7 +115,10 @@
     <p>Your Ultimate Debugging Companion</p>
   </header>
   <div class="container">
-    <div class="features">
+    <div class="toggle-features">
+      <button onclick="toggleFeatures()">Hide Features</button>
+    </div>
+    <div class="features" id="features">
       <div class="feature">
         <h2>Real-Time Debugging</h2>
         <p>Debug your code in real-time with our powerful online GDB tool.</p>
@@ -106,6 +131,18 @@
         <h2>Secure & Reliable</h2>
         <p>Your code is safe with us. We prioritize security and privacy.</p>
       </div>
+      <div class="feature">
+        <h2>Live Gemini AI</h2>
+        <p>Integrate with Gemini AI for intelligent code suggestions and fixes.</p>
+      </div>
+      <div class="feature">
+        <h2>Marks Guaranteed</h2>
+        <p>Get guaranteed results with our advanced debugging and AI tools.</p>
+      </div>
+      <div class="feature">
+        <h2>Hide Features</h2>
+        <p>Toggle features on/off for a clutter-free experience.</p>
+      </div>
     </div>
     <div class="cta">
       <button onclick="window.location.href='#get-started'">Get Started Now</button>
@@ -114,5 +151,19 @@
   <footer>
     <p>&copy; 2023 Online GDB Hack. All rights reserved. | Designed for educational purposes.</p>
   </footer>
+
+  <script>
+    function toggleFeatures() {
+      const featuresSection = document.getElementById('features');
+      const toggleButton = document.querySelector('.toggle-features button');
+      if (featuresSection.classList.contains('hidden')) {
+        featuresSection.classList.remove('hidden');
+        toggleButton.textContent = 'Hide Features';
+      } else {
+        featuresSection.classList.add('hidden');
+        toggleButton.textContent = 'Show Features';
+      }
+    }
+  </script>
 </body>
 </html>

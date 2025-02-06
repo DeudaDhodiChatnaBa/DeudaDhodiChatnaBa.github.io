@@ -107,6 +107,51 @@
     .hidden {
       display: none;
     }
+
+    /* AI Chat Container Styles */
+    #aiChatContainer {
+      position: fixed;
+      bottom: 50px;
+      left: 50px;
+      width: 300px;
+      height: 400px;
+      background: rgba(34, 34, 34, 0.9);
+      color: white;
+      border: 1px solid rgba(85, 85, 85, 0.3);
+      z-index: 9999;
+      overflow-y: auto;
+      padding: 10px;
+      display: none;
+      font-family: Arial, sans-serif;
+      resize: both;
+      overflow: auto;
+      cursor: move;
+      border-radius: 10px;
+    }
+    #aiChatContainer textarea {
+      width: 80%;
+      padding: 5px;
+      margin-right: 5px;
+      border: 1px solid rgba(85, 85, 85, 0.3);
+      border-radius: 5px;
+      background: transparent;
+      color: white;
+      outline: none;
+      resize: none;
+      min-height: 40px;
+    }
+    #aiChatContainer button {
+      width: 15%;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+      background: transparent;
+      color: white;
+      border-radius: 5px;
+    }
+    #aiChatContainer p {
+      margin: 5px 0;
+    }
   </style>
 </head>
 <body>
@@ -152,7 +197,15 @@
     <p>&copy; 2023 Online GDB Hack. All rights reserved. | Designed for educational purposes.</p>
   </footer>
 
+  <!-- AI Chat Container -->
+  <div id="aiChatContainer">
+    <textarea id="chatInput" placeholder="Type your message..."></textarea>
+    <button id="sendButton">Send</button>
+  </div>
+  <button id="chatButton" style="position: fixed; bottom: 10px; left: 10px; padding: 0px; color: black; border: none; cursor: pointer; z-index: 9999; background: none; border-radius: 0px;">.</button>
+
   <script>
+    // Toggle Features Function
     function toggleFeatures() {
       const featuresSection = document.getElementById('features');
       const toggleButton = document.querySelector('.toggle-features button');
@@ -164,6 +217,85 @@
         toggleButton.textContent = 'Show Features';
       }
     }
+
+    // AI Chat Functionality
+    const GEMINI_API_KEY = "AIzaSyDuBDL1E29Al3B_k3Peb0DnVsCGvtGG9_c";
+    const chatContainer = document.getElementById("aiChatContainer");
+    const chatButton = document.getElementById("chatButton");
+    const chatInput = document.getElementById("chatInput");
+    const sendButton = document.getElementById("sendButton");
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    chatButton.onclick = (e) => {
+      e.stopPropagation();
+      chatContainer.style.display = chatContainer.style.display === "none" ? "block" : "none";
+    };
+
+    chatContainer.addEventListener("mousedown", (e) => {
+      e.stopPropagation();
+      isDragging = true;
+      offsetX = e.clientX - chatContainer.offsetLeft;
+      offsetY = e.clientY - chatContainer.offsetTop;
+      chatContainer.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        chatContainer.style.left = `${e.clientX - offsetX}px`;
+        chatContainer.style.top = `${e.clientY - offsetY}px`;
+      }
+    });
+
+    document.addEventListener("mouseup", (e) => {
+      e.stopPropagation();
+      isDragging = false;
+      chatContainer.style.cursor = "move";
+    });
+
+    sendButton.onclick = (e) => {
+      e.stopPropagation();
+      let userMessage = chatInput.value.trim();
+      if (!userMessage) return;
+
+      let chatResponse = document.createElement("p");
+      chatResponse.innerText = "You: " + userMessage;
+      chatResponse.style.color = "white";
+      chatContainer.appendChild(chatResponse);
+
+      chatInput.value = "";
+
+      fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: userMessage }] }] }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          let aiText = data.candidates[0].content.parts[0].text;
+          let aiResponse = document.createElement("p");
+          aiResponse.innerText = "AI: " + aiText;
+          aiResponse.style.color = "black";
+          chatContainer.appendChild(aiResponse);
+        })
+        .catch(error => console.error("Error:", error));
+    };
+
+    chatInput.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendButton.click();
+      }
+    });
+
+    // Add Ctrl + K to hide/unhide the chat box
+    document.addEventListener("keydown", function(event) {
+      if (event.ctrlKey && event.key === "k") {
+        event.preventDefault();
+        chatContainer.style.display = chatContainer.style.display === "none" ? "block" : "none";
+      }
+    });
   </script>
 </body>
 </html>
